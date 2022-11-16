@@ -1,0 +1,23 @@
+---
+title: "WPGD3"
+author: "YVG"
+date: "2022-11-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+#Check the colours:
+col <- colors()
+colors()
+
+#Graph to change
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[419]) + #pink
+  theme_minimal()
+```
+
