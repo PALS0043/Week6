@@ -1,0 +1,79 @@
+---
+title: "practical5"
+author: "Rong"
+date: "2022-11-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("lavaan")
+install.packages("boot")
+```
+
+```{r}
+library(lavaan)
+library(semPlot)
+library(boot)
+library(tidyverse)
+```
+
+```{r}
+twisl<-read.csv("twisleton.csv")
+```
+
+```{r}
+twisl <- twisl %>% na_if(99)
+```
+
+```{r}
+twisl<-twisl%>%mutate(months=relleng_yrs*12+relleng_mos)
+```
+
+```{r}
+twisl <- twisl %>% mutate(gender=gender %>% as.factor(),
+                          cohabit=cohabit %>% as.factor())
+```
+
+```{r}
+mod1_lm <- lm(rqual ~ psyflx, data=twisl)
+summary(mod1_lm)
+```
+
+```{r}
+Model <- '
+rqual ~ psyflx
+'
+
+mod1_sem <- sem(Model, data=twisl)
+summary(mod1_sem, rsquare=T)
+```
+
+```{r}
+Model2 <- '
+        pa ~ a*psyflx
+        rqual ~ b*pa + c*psyflx
+        
+        
+        indirect := (a*b)
+        direct  :=  c
+        total   := c + (a*b)
+        '
+```
+
+```{r}
+semPlot::semPaths(mod1_sem)
+```
+
+```{r}
+mod2 <- sem(Model2, twisl)
+summary(mod2, rsquare=T)
+```
+
+```{r}
+
+```
+
