@@ -1,0 +1,21 @@
+---
+title: "CBDQ7"
+output: html_document
+date: "2022-11-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+# all the named colours in R
+col <- colors()
+colors()
+
+# make plot
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[639]) +
+  theme_minimal()
+```	
