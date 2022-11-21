@@ -1,0 +1,22 @@
+---
+title: "XLRF3"
+author: "Zane Khoe Cai Cheng"
+date: "2022-11-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Here is a list of all the named colours in R
+```{r}
+library(tidyverse)
+col <- colors()
+colors()
+```
+Change the number in square brackets to view the colours above
+```{r}
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[651]) +
+  theme_minimal()
+```
