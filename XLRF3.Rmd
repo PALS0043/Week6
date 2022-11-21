@@ -7,10 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
+
 Here is a list of all the named colours in R
 ```{r}
-library(tidyverse)
 col <- colors()
 colors()
 ```
@@ -20,3 +21,4 @@ ggplot(iris, aes(x=Sepal.Length)) +
   geom_histogram(fill=col[651]) +
   theme_minimal()
 ```
+
