@@ -1,0 +1,130 @@
+---
+title: "week 6 homework"
+output: html_document
+---
+
+```{r setup, include=FALSE, purl=F}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dataset
+
+Today's homework data comes from a paper by Vuvan et al. (2020). The researchers were interested in the relationship between working memory abilities, musical training and preference for musical complexity. They hypothesised that people with more musical training would prefer more complex musical style and that this association would mediated by the amount of working memory capacity a person received. The idea was that musical training might associate positively with bigger working memory capacity, and this might associate positively with preference for musical complexity.
+
+The main variables of interest are:
+* MT: Musical Training, in years
+* audWMC: auditory working memory capacity
+* classical, folk, jazz and blues: preference for musical complexity in each style
+
+Additional background variables include:
+* age: age in years
+* gender: gender
+* SES: calculate from familyIncome/highestFather/highestMother
+
+Run this chunk to read in the data and call the libraries you will need
+```{r initial, purl=F}
+library(lavaan)
+library(tidyverse)
+library(semPlot)
+library(boot)
+vuvan <- read.csv("vuvan2.csv") 
+```
+
+Q1. Run some code to make a table of mean age by gender in this sample, rounded to 1dp.
+HINT: this is harder than it seems!
+```{r q01}
+vuvan <- vuvan %>% mutate(gender = dplyr::recode(gender, "Agender" = "NA", "female" = "f","FEMALE" = "f", "Female" = "f", "FEMALEn" = "f", "FEMENINE" = "f", "FEMME" = "f", "SHEHER" = "f", "NONBINARY" = "nb", "male" = "m", "Male" = "m", "MALE" = "m", "MAN" = "m"))
+
+summary_agegender <- vuvan %>% group_by(gender) %>% summarise(mean_age = round(mean(age), 1))
+```
+
+
+Q2. We want to make a new variable called 'PMC' that reflects the average preference for musical complexity across classical, folk, jazz and blues. The code we wrote below seems to have a problem.
+```{r q02}
+#vuvan <- vuvan %>% mutate(PMC=mean(classical:blues))
+vuvan<- vuvan %>% mutate(id = row_number()) 
+vuvan_preference <- vuvan %>% mutate(id = row_number()) %>% 
+  pivot_longer(classical:blues, names_to = "genre", values_to = "pref") %>% 
+  group_by(id) %>% summarise(PMC = mean(pref))
+
+vuvan <- inner_join(vuvan, vuvan_preference, by = "id")
+```
+
+
+
+Q3. Make a path model using lavaan, to test the hypothesised mediation and call it `mod1`.
+
+In the model:
+a is the path from MT to audWMC
+b is the path from audWMC to PMC
+c is the direct path from MT to PMC
+```{r q03}
+#MT predicts preference, mediated by WM 
+
+Model1 <- '
+audWMC ~ a*MT
+PMC ~ b*audWMC + c*MT 
+
+indirect := (a*b)
+direct  :=  c
+total   := c + (a*b)
+'
+mod1 <- sem(Model1, data = vuvan)
+```
+
+Q4. Interpret the output
+```{r q04}
+summary(mod1)
+#no significant mediation, p = .53
+```
+
+Q5. Make a path diagram to illustrate the paths in your analysis
+```{r q05}
+semPaths(mod1)
+```
+
+Q6. Find out for yourself: semPaths() is automatically abbreviating our variable names to 3 characters - how can we change this to reflect the original variable names?
+```{r q06}
+semPaths(mod1, nCharNodes = 0)
+```
+
+
+Q7. Show how you would calculate the coefficients without sem().
+```{r q07}
+path_bc <- lm(PMC ~ audWMC + MT, data = vuvan)
+summary(path_bc)
+b <- -0.003144095
+b_se <- 0.005061
+
+c <- 0.060897
+c_se <- .005905
+
+path_a <- lm(audWMC ~ MT, data = vuvan)
+summary(path_a)
+a <- 0.53797
+a_se <- 0.06798
+
+indirect <- a*b
+total <- c + indirect
+```
+
+Q8. Show how you would test the significance of the coefficients without sem().
+```{r q08}
+ab_function1 <- function(data, indices) { 
+  d <- data[indices, ]
+  model1 <- lm(PMC ~ audWMC + MT, data = d)
+  model2 <- lm(audWMC ~ MT, data = d)
+  return(coef(model1)[2]*coef(model2)[2])
+  }
+set.seed(5)
+ab_boot <- boot(data = vuvan, statistic = ab_function1, R = 5000)
+ab_boot
+plot(ab_boot)
+boot.ci(ab_boot)
+```
+
+Q9. Clone the repo https://github.com/PALS0043/Week6 and COPY the code for the histogram from Template_file.Rmd into a new file, with the name of your candidate number. Save this file in your local copy of the repo and change the colour of the plot to your favourite colour. Then commit and PUSH this file to the repo.
+
+Do NOT edit the Template_file.Rmd!
+
+
