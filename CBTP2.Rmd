@@ -1,0 +1,17 @@
+---
+title: "CBTP2"
+author: "Ann Meng"
+date: "11/15/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[640]) +
+  theme_minimal()
+```

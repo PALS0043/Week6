@@ -1,0 +1,18 @@
+---
+title: "p"
+author: "Rong"
+date: "2022-11-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[649]) +
+  theme_minimal()
+```
+

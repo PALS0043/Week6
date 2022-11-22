@@ -1,0 +1,23 @@
+---
+title: "Week6"
+author: "Elena"
+date: "2022-11-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+col <- colors()
+colors()
+ggplot(iris, aes(x=Sepal.Length)) +
+  geom_histogram(fill=col[537]) +
+  theme_minimal()
+```
+
