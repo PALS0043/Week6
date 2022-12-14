@@ -19,6 +19,7 @@ Change the number in square brackets to view the colours above
 ggplot(iris, aes(x=Sepal.Length)) +
   geom_histogram(fill=col[546]) +
   theme_minimal()
+#test commit
 ```
 
 Choose your favorite colour and paste the graph code into a NEW RMD
